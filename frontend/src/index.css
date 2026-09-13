@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Sora", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* White desk — cool paper, pure panels, cobalt signal */
+  --color-paper: #f4f6f8;
+  --color-ink: #0b1220;
+  --color-steel: #5b6b7c;
+  --color-line: #e2e8f0;
+  --color-panel: #ffffff;
+  --color-cobalt: #2563eb;
+  --color-mint: #059669;
+  --color-coral: #e11d48;
+  --color-amber: #d97706;
+  --color-violet: #6d28d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cobalt);
+  outline-offset: 2px;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes tape-sweep {
+  0% {
+    transform: translateX(-40%);
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140%);
+    opacity: 0.35;
+  }
+}
+
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+.desk-rail {
+  position: relative;
+  height: 2px;
+  overflow: hidden;
+  background: #e8eef7;
+}
+
+.desk-rail[data-live='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 28%;
+  background: linear-gradient(90deg, transparent, var(--color-cobalt), transparent);
+  animation: tape-sweep 2.4s ease-in-out infinite;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1.5px solid var(--color-ink);
+  background: #fff;
+  color: var(--color-cobalt);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  box-shadow: 3px 3px 0 #dbe4f4;
+}
+
+.stat-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 5.5rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 0.4rem;
+}
+
+.stat-chip .lbl {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-steel);
+}
+
+.stat-chip .val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
