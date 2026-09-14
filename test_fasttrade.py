@@ -40,6 +40,26 @@ class FastTradeTests(unittest.TestCase):
         self.assertAlmostEqual(fee_floor_pct(s), 0.06, places=5)
         self.assertFalse(fee_edge_ok(flat, s))
 
+    def test_scalp_risk_rewards_more_than_it_risks(self):
+        import math
+        from app import PRESETS, dynamic_risk
+        s = dict(PRESETS["balanced"]["settings"])
+        wave = lambda i: 100 * (1 + .005 * math.sin(i / 4))
+        candles = [[i, wave(i), wave(i) + .3, wave(i) - .3, wave(i), 10] for i in range(80)]
+        tp, sl = dynamic_risk(candles, s)
+        self.assertGreaterEqual(tp, 2 * sl)              # ~1:1 risk cannot pay the fee floor
+        self.assertLessEqual(sl, s["stop_loss_pct"])     # stop_loss_pct caps risk, never sets it
+        self.assertGreaterEqual(sl, fee_floor_pct(s))    # stop still spans round-trip friction
+
+    def test_entry_edge_gate_ignores_tp_multiple(self):
+        volatile = [[i, 100, 100.4, 99.6, 100, 10] for i in range(120)]
+        calm = [[i, 100, 100.02, 99.98, 100, 10] for i in range(120)]
+        s = {"fee_rate": .0002, "slippage_rate": .0001, "fee_edge_mult": 3, "atr_period": 14}
+        self.assertTrue(fee_edge_ok(volatile, s))        # 0.8% ATR clears 3 x 0.06% friction
+        self.assertFalse(fee_edge_ok(calm, s))           # 0.04% ATR does not
+        self.assertEqual(fee_edge_ok(calm, {**s, "atr_tp_mult": 10.0}), fee_edge_ok(calm, s))
+        self.assertEqual(fee_edge_ok(volatile, {**s, "atr_tp_mult": 10.0}), fee_edge_ok(volatile, s))
+
     def test_chart_ai_and_patterns_shape(self):
         import math
         candles = []

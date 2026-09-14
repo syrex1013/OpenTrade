@@ -150,7 +150,9 @@ def expected_edge_pct(candles, settings, i=None):
     i = len(candles) - 1 if i is None else i
     price = candles[i][4] or 1.0
     atr_pct = (atr(candles[max(0, i - 80):i + 1], int(settings.get("atr_period", 14)))[-1] / price) * 100
-    return atr_pct * float(settings.get("atr_tp_mult", 1.0))
+    # One ATR is the expected next-bar move. Deliberately NOT scaled by atr_tp_mult:
+    # the profit target may reach further, but the entry edge gate must stay honest.
+    return atr_pct
 
 
 def fee_edge_ok(candles, settings, i=None, spread_bps=0.0):
@@ -169,6 +171,10 @@ def min_gain_usd(settings):
     # Floor at 0; live/backtest exits still require strictly > configured min.
     return max(0.0, float((settings or {}).get("min_gain_usd", .1) or 0))
 
+
+# Stored settings whose former default was superseded by the corrected risk geometry.
+# Only a stored value that still equals the old default is upgraded (see _load_settings).
+SUPERSEDED_DEFAULTS = {"atr_tp_mult": (1.2, 3.0), "atr_sl_mult": (.7, .5), "stop_loss_pct": (.25, .2)}
 
 DEFAULT_GATES = {
     "atr": True, "trend": True, "volume": True, "rsi": True, "rsi2": True,
@@ -198,11 +204,11 @@ PRESETS = {
         "settings": {
             "interval": "1m", "poll_seconds": 2, "position_pct": 100, "leverage": 5, "min_gain_usd": .1,
             "fee_rate": .0002, "slippage_rate": .0001,
-            "take_profit_pct": .35, "stop_loss_pct": .25, "min_profit_pct": .12, "max_hold_bars": 6, "trail_pct": .15,
+            "take_profit_pct": .35, "stop_loss_pct": .2, "min_profit_pct": .12, "max_hold_bars": 6, "trail_pct": .15,
             "max_spread_bps": 12, "min_book_imbalance": .02, "rsi_buy": 45, "rsi_sell": 50, "rsi_period": 4,
             "rsi2_buy": -1, "rsi2_sell": 70, "sma_fast": 8, "sma_slow": 21, "vwap_period": 20, "bb_period": 20, "bb_std": 2,
             "volume_period": 20, "min_volume_ratio": .25, "vwap_distance_pct": .05, "cooldown_bars": 1, "buy_score": 2,
-            "min_atr_pct": .05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 1.0, "atr_sl_mult": .7,
+            "min_atr_pct": .05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 3.0, "atr_sl_mult": .5,
             "min_entry_score": 2, "expectancy_window": 40, "expectancy_halt": True, "auto_scan": True,
             "fee_edge_mult": 2, "atr_fee_lambda": 1.0, "vwap_z_entry": 0, "fee_style": "maker", "max_positions": 2, "ai_scan": False,
             "gates": dict(DEFAULT_GATES),
@@ -215,11 +221,11 @@ PRESETS = {
         "settings": {
             "interval": "15s", "poll_seconds": 1, "position_pct": 100, "leverage": 5, "min_gain_usd": .1,
             "fee_rate": .0002, "slippage_rate": .0001, "fee_style": "maker", "live_post_only": True,
-            "take_profit_pct": .35, "stop_loss_pct": .25, "min_profit_pct": .12, "max_hold_bars": 5, "trail_pct": .15,
+            "take_profit_pct": .35, "stop_loss_pct": .2, "min_profit_pct": .12, "max_hold_bars": 5, "trail_pct": .15,
             "max_spread_bps": 12, "min_book_imbalance": .02, "rsi_buy": 45, "rsi_sell": 50, "rsi_period": 4,
             "rsi2_buy": -1, "rsi2_sell": 70, "sma_fast": 8, "sma_slow": 21, "vwap_period": 20, "bb_period": 20, "bb_std": 2,
             "volume_period": 20, "min_volume_ratio": .25, "vwap_distance_pct": .05, "cooldown_bars": 0, "buy_score": 2,
-            "min_atr_pct": .05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 1.2, "atr_sl_mult": .7,
+            "min_atr_pct": .05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 3.0, "atr_sl_mult": .5,
             "min_entry_score": 2, "expectancy_window": 40, "expectancy_halt": True, "auto_scan": True,
             "fee_edge_mult": 3, "atr_fee_lambda": 1.0, "vwap_z_entry": 0, "ai_scan": True, "max_positions": 4,
             "scan_symbols": 12, "scan_seconds": 5,
@@ -277,15 +283,18 @@ def dynamic_risk(candles, settings, i=None, entry=None, qty=None):
         margin = 10.0 * float(settings.get("position_pct", 100)) / 100
         notional = max(margin * lev, 1e-9)
         gain_tp = min_tp_pct_for_gain(price, notional / price, settings)
-    atr_tp = atr_pct * float(settings.get("atr_tp_mult", 1.0))
-    # Binding floor = fees / ATR / $min-gain.
-    # User take_profit_pct may raise target, but never more than 25% above the $min-gain floor
-    # (prevents a stale 0.9% TP from blocking scalps that already cleared min_gain_usd).
+    atr_tp = atr_pct * float(settings.get("atr_tp_mult", 3.0))
+    # Binding floor = fees / ATR / $min-gain. take_profit_pct raises the target, never lowers it.
     edge_floor = floor * max(2.0, fee_edge_mult_of(settings))
     base = max(edge_floor, floor + .08, atr_tp, gain_tp)
-    tp = max(base, min(user_tp, max(gain_tp * 1.25, base)))
-    sl = max(float(settings.get("stop_loss_pct", .22)), floor * .7, atr_pct * float(settings.get("atr_sl_mult", .7)))
-    return tp, min(sl, tp * .95)
+    tp = max(base, user_tp)
+    # Risk is ATR-sized, floored at round-trip friction and capped by the stop_loss_pct
+    # ceiling; tp/2 keeps reward at least twice the risk even if the ATR multiples are
+    # misconfigured. Old `max(stop_loss_pct, ...)` made the user ceiling a *floor*, pinning
+    # SL to the TP and flattening reward:risk to ~1:1 — the fee floor then ate expectancy.
+    risk = max(floor, atr_pct * float(settings.get("atr_sl_mult", .5)))
+    sl = min(float(settings.get("stop_loss_pct", .2)), risk, tp / 2)
+    return tp, sl
 
 
 def adapt_settings(candles, settings=None):
@@ -295,24 +304,26 @@ def adapt_settings(candles, settings=None):
     closes = [c[4] for c in candles]
     atr_pct = atr(candles, int(s.get("atr_period", 14)))[-1] / (closes[-1] or 1) * 100
     floor = fee_floor_pct(s)
-    # Fee-aware ATR gate + edge room vs fee_edge_mult.
+    # Fee-aware ATR gate: one ATR must clear fee_edge_mult x round-trip friction.
     base_min = float(s.get("min_atr_pct", .05))
-    edge_need = floor * max(1.0, fee_edge_mult_of(s)) / max(0.5, float(s.get("atr_tp_mult", 1.0)))
+    edge_need = floor * max(1.0, fee_edge_mult_of(s))
     s["min_atr_pct"] = max(base_min, floor * float(s.get("atr_fee_lambda", 1.0)), edge_need * .5)
     # Taker scalps need a thicker cushion — leverage multiplies equity fee drag.
     if str(s.get("fee_style", "maker")).lower() == "taker":
         s["fee_edge_mult"] = max(float(s.get("fee_edge_mult", 3) or 3), 4.0)
-        s["atr_tp_mult"] = max(float(s.get("atr_tp_mult", 1.2) or 1.2), 1.4)
-    # Sub-minute bars: keep wall-clock hold similar, but ATR% is smaller per bar —
-    # lower the dead-tape floor and fee-edge ATR TP slightly so makers can still fire.
+        s["atr_tp_mult"] = max(float(s.get("atr_tp_mult", 3.0) or 3.0), 3.0)
+    # Sub-minute bars: keep wall-clock hold and stop/target distance similar, but ATR% is
+    # smaller per bar — scale the ATR multiples and lower the dead-tape floor.
     bar_sec = INTERVAL_SECONDS.get(str(s.get("interval", "1m")), 60)
     if bar_sec < 60:
         scale = max(1, int(round(60 / bar_sec)))
+        rt = scale ** 0.5
         s["max_hold_bars"] = int(s.get("max_hold_bars", 5)) * scale
         s["cooldown_bars"] = int(s.get("cooldown_bars", 0)) * scale
         s["min_atr_pct"] = max(0.01, float(s.get("min_atr_pct", 0.05)) / scale)
-        # Need more ATR multiples on tiny bars to clear the same fee floor.
-        s["atr_tp_mult"] = max(float(s.get("atr_tp_mult", 1.2) or 1.2), 1.2 * (scale ** 0.5))
+        # Need more ATR multiples on tiny bars to clear the same fee floor (same wall-clock move).
+        s["atr_tp_mult"] = max(float(s.get("atr_tp_mult", 3.0) or 3.0), 3.0 * rt)
+        s["atr_sl_mult"] = max(float(s.get("atr_sl_mult", .5) or .5), .5 * rt)
         # Do NOT loosen RSI/score here — short bars are noisier and went −EV when relaxed.
         # Demand a thicker fee multiple instead; 1m remains the +EV default interval.
         s["fee_edge_mult"] = max(float(s.get("fee_edge_mult", 3) or 3), 4.0)
@@ -486,7 +497,7 @@ def signal_series(candles, settings=None):
     br_p = int(settings.get("breakout_period", 5)); br_bps = float(settings.get("breakout_bps", 1))
     br_vol = float(settings.get("breakout_volume_ratio", 1.1))
     vol_period = max(2, int(settings.get("volume_period", 20)))
-    floor = fee_floor_pct(settings); edge_mult = fee_edge_mult_of(settings); atr_tp_mult = float(settings.get("atr_tp_mult", 1.0))
+    floor = fee_floor_pct(settings); edge_mult = fee_edge_mult_of(settings)
     g = gates_of(settings)
     for i in range(50, n):
         c = closes[i]; o = opens[i]; h = highs[i]; l = lows[i]
@@ -500,7 +511,8 @@ def signal_series(candles, settings=None):
         dyn_sell = rsi_sell - (2 if atr_pct > .2 else 0)
         atr_ok = (atr_pct >= min_atr) if g.get("atr", True) else True
         if g.get("fee_edge", True) and edge_mult > 0:
-            edge_ok = (atr_pct * float(settings.get("atr_tp_mult", 1.0))) >= edge_mult * (floor + 0.0)
+            # One ATR (the expected next-bar move) must clear the fee multiple.
+            edge_ok = atr_pct >= edge_mult * floor
         else:
             edge_ok = True
         if not atr_ok or not edge_ok:
@@ -932,34 +944,36 @@ def optimize(candles, base=None, on_progress=None):
     MIN_HOLDOUT_PF = 1.05
     grid = 0; total_grid = 1
     candidates = []
-    # Wide +EV grid (fast backtests make this practical): RSI timing, buy_score,
-    # hold, ATR TP, fee edge, cooldown, VWAP z-entry.
+    # Grid covers the levers that actually move scalp expectancy: RSI timing, buy_score,
+    # hold, and — crucially — the ATR reward:risk geometry (atr_tp_mult vs atr_sl_mult).
+    # Sampling the TP multiple below the SL multiple only ever produced ~1:1 risk, so the
+    # old (1.0, 1.2, 1.5) range could not find a +EV scalp. rsi_sell/z-entry are fixed:
+    # they never changed the outcome enough to earn grid slots.
     for rsi_buy in (38, 40, 45):
-        for rsi_sell in (50, 55):
-            for buy_score in (1.5, 2.0, 2.5):
-                for hold in (3, 5, 8):
-                    for atr_tp in (1.0, 1.2, 1.5):
-                        for edge in (2.0, 2.5, 3.0):
+        for buy_score in (1.5, 2.0, 2.5):
+            for hold in (3, 5, 8):
+                for atr_tp in (2.0, 3.0, 4.5):
+                    for atr_sl in (.35, .5):
+                        for edge in (2.0, 3.0):
                             for cooldown in (0, 1):
-                                for z_entry in (0, 1.5):
-                                    candidates.append((rsi_buy, rsi_sell, buy_score, hold, atr_tp, edge, cooldown, z_entry))
+                                candidates.append((rsi_buy, buy_score, hold, atr_tp, atr_sl, edge, cooldown))
     total_grid = max(1, len(candidates))
     best = None; best_key = None
     best_train = None; best_train_key = (-10**9,)
     best_train_result = None; best_holdout_result = None
     evaluated = 0; holdout_runs = 0
-    for grid, (rsi_buy, rsi_sell, buy_score, hold, atr_tp, edge, cooldown, z_entry) in enumerate(candidates, 1):
+    for grid, (rsi_buy, buy_score, hold, atr_tp, atr_sl, edge, cooldown) in enumerate(candidates, 1):
         if on_progress and grid % max(1, total_grid // 50) == 0:
             try: on_progress(int(grid / total_grid * 100), grid, total_grid)
             except Exception: pass
         # dict(base, ...) preserves fee_style/fee_rate/slippage_rate/live_post_only from base.
         candidate = dict(
             base,
-            rsi_buy=rsi_buy, rsi_sell=rsi_sell, rsi_period=4, rsi2_buy=-1, rsi2_sell=70,
-            take_profit_pct=.35, stop_loss_pct=.25, min_profit_pct=.12,
+            rsi_buy=rsi_buy, rsi_sell=50, rsi_period=4, rsi2_buy=-1, rsi2_sell=70,
+            take_profit_pct=.35, stop_loss_pct=.2, min_profit_pct=.12,
             max_hold_bars=hold, trail_pct=.15, min_atr_pct=.05, vwap_period=20,
-            vwap_z_entry=z_entry, cooldown_bars=cooldown, min_volume_ratio=.25, trend_tolerance_pct=1.1,
-            bb_std=2, atr_tp_mult=atr_tp, atr_sl_mult=.7, fee_edge_mult=edge, atr_fee_lambda=1.0,
+            vwap_z_entry=0, cooldown_bars=cooldown, min_volume_ratio=.25, trend_tolerance_pct=1.1,
+            bb_std=2, atr_tp_mult=atr_tp, atr_sl_mult=atr_sl, fee_edge_mult=edge, atr_fee_lambda=1.0,
             buy_score=buy_score, min_entry_score=buy_score, auto_scan=True, scan_symbols=20, scan_seconds=5,
             sma_fast=8, sma_slow=21,
         )
@@ -1264,13 +1278,13 @@ SETTINGS_GROUPS = [
     ]),
     ("Exits", [
         _field("take_profit_pct", "Take profit %", "float", "Exits", "Soft target; min-gain and ATR can raise it.", min=0, max=20, step=.05),
-        _field("stop_loss_pct", "Stop loss %", "float", "Exits", "Hard stop distance.", min=0, max=20, step=.05),
+        _field("stop_loss_pct", "Max stop loss %", "float", "Exits", "Ceiling on stop distance; ATR sizes the actual stop below it.", min=0, max=20, step=.05),
         _field("min_profit_pct", "Min profit %", "float", "Exits", "Floor on the dynamic TP.", min=0, max=20, step=.05),
         _field("max_hold_bars", "Max hold bars", "int", "Exits", "Bars before a profitable time exit.", min=1, max=200, step=1),
         _field("trail_pct", "Trail %", "float", "Exits", "Give-back allowed from peak.", min=0, max=20, step=.05),
         _field("atr_period", "ATR period", "int", "Exits", "Volatility window.", min=2, max=100, step=1),
-        _field("atr_tp_mult", "ATR TP mult", "float", "Exits", "TP = ATR% x mult.", min=0, max=10, step=.05),
-        _field("atr_sl_mult", "ATR SL mult", "float", "Exits", "SL = ATR% x mult.", min=0, max=10, step=.05),
+        _field("atr_tp_mult", "ATR TP mult", "float", "Exits", "TP = ATR% x mult. Must exceed the SL mult for scalp reward:risk.", min=0, max=10, step=.05),
+        _field("atr_sl_mult", "ATR SL mult", "float", "Exits", "SL = ATR% x mult, capped by max stop loss %.", min=0, max=10, step=.05),
     ]),
     ("Entry filters", [
         _field("rsi_buy", "RSI buy", "float", "Entry filters", "Buy below this RSI.", min=0, max=100, step=1),
@@ -1303,7 +1317,8 @@ SETTINGS_GROUPS = [
     ]),
     ("Expectancy", [
         _field("expectancy_window", "Window", "int", "Expectancy", "Trades averaged for expectancy.", min=5, max=500, step=1),
-        _field("expectancy_halt", "Halt on negative expectancy", "bool", "Expectancy", "Stop trading when the rolling average goes negative."),
+        _field("expectancy_halt", "Halt on negative expectancy", "bool", "Expectancy", "Pause entries when the rolling average goes negative."),
+        _field("halt_cooldown_sec", "Halt cooldown seconds", "int", "Expectancy", "Seconds before a halt is lifted so scalping resumes.", min=30, max=86400, step=30),
     ]),
     ("Advanced", [
         _field("fee_edge_mult", "Fee edge mult", "float", "Advanced", "Fee multiple the edge must clear.", min=0, max=20, step=.1),
@@ -1393,7 +1408,7 @@ class State:
     running: bool = False; mode: str = "paper"; exchange: str = "binance"; symbol: str = "INJUSDT"; price: float = 0; action: str = "HOLD"
     cash: float = 10; coin: float = 0; entry: float = 0; pnl: float = 0; realized_pnl: float = 0; equity: float = 10
     trades: int = 0; wins: int = 0; spread_bps: float = 0; imbalance: float = 0; error: str = ""
-    halted: bool = False; expectancy: float = 0
+    halted: bool = False; expectancy: float = 0; halt_until: float = 0
 
 class Bot:
     def __init__(self):
@@ -1403,14 +1418,14 @@ class Bot:
             "interval": "1m", "poll_seconds": 2, "position_pct": 100, "leverage": 5, "min_gain_usd": .1,
             "gates": dict(DEFAULT_GATES),
             "fee_rate": .0002, "slippage_rate": .0001,
-            "take_profit_pct": .35, "stop_loss_pct": .25, "min_profit_pct": .12, "max_hold_bars": 6, "trail_pct": .15,
+            "take_profit_pct": .35, "stop_loss_pct": .2, "min_profit_pct": .12, "max_hold_bars": 6, "trail_pct": .15,
             "max_spread_bps": 12, "min_book_imbalance": .02, "rsi_buy": 45, "rsi_sell": 50, "rsi_period": 4,
             "rsi2_buy": -1, "rsi2_sell": 70, "sma_fast": 8, "sma_slow": 21, "vwap_period": 20, "bb_period": 20, "bb_std": 2,
             "volume_period": 20, "min_volume_ratio": .25, "vwap_distance_pct": .05, "cooldown_bars": 1, "buy_score": 2,
             "breakout_period": 5, "breakout_bps": 1, "breakout_volume_ratio": 1.1, "min_atr_pct": .05,
-            "min_trend_slope_pct": -.05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 1.2, "atr_sl_mult": .7,
+            "min_trend_slope_pct": -.05, "trend_tolerance_pct": 1.1, "atr_period": 14, "atr_tp_mult": 3.0, "atr_sl_mult": .5,
             "fee_edge_mult": 3, "atr_fee_lambda": 1.0, "vwap_z_entry": 0, "auto_scan": True, "scan_symbols": 12, "scan_seconds": 5,
-            "min_entry_score": 2, "expectancy_window": 40, "expectancy_halt": True, "max_positions": 4, "fee_style": "maker", "live_post_only": True,
+            "min_entry_score": 2, "expectancy_window": 40, "expectancy_halt": True, "halt_cooldown_sec": 600, "max_positions": 4, "fee_style": "maker", "live_post_only": True,
             "scan_whitelist": ["INJUSDT", "SOPHUSDT", "REZUSDT", "THEUSDT", "HOLOUSDT", "UNIUSDT", "PYTHUSDT", "SUIUSDT"],
             "ai_scan": True,
         }
@@ -1465,6 +1480,11 @@ class Bot:
         if not isinstance(stored, dict): return
         clean, errors = validate_settings(stored)
         for e in errors: print(f"settings: dropping stored value — {e}", file=sys.stderr)
+        # A stored value still equal to the superseded default was never hand-tuned, so lift
+        # it to the corrected default; a deliberate override (any other value) is preserved.
+        for key, (old, new) in SUPERSEDED_DEFAULTS.items():
+            if clean.get(key) == old:
+                clean[key] = new
         self.settings.update(clean)
         if clean.get("symbol"):
             self.state.symbol = clean["symbol"]
@@ -1758,8 +1778,12 @@ class Bot:
         recent = self.trade_pnls[-window:]
         self.state.expectancy = sum(recent) / len(recent) if recent else 0.0
         if self.settings.get("expectancy_halt", True) and len(recent) >= max(20, window // 2) and self.state.expectancy < 0:
+            # Timed pause, not a latch: a rolling window dips negative often at scalp
+            # cadence, and a permanent halt stopped the bot trading altogether.
             self.state.halted = True
-            self.emit("halt", {"expectancy": self.state.expectancy, "window": len(recent)})
+            self.state.halt_until = time.time() + float(self.settings.get("halt_cooldown_sec", 600))
+            self.emit("halt", {"expectancy": self.state.expectancy, "window": len(recent),
+                               "resume_in": float(self.settings.get("halt_cooldown_sec", 600))})
         self.state.realized_pnl = sum(self.trade_pnls)
         self._sync_focus()
         self.state.equity = self._equity_mark()
@@ -2006,6 +2030,9 @@ class Bot:
         interval_sec = INTERVAL_SECONDS
         while self.state.running and not self.stop_event.is_set():
             try:
+                if self.state.halted and time.time() >= self.state.halt_until:
+                    self.state.halted = False
+                    self.emit("halt_clear", {"expectancy": self.state.expectancy, "trades": self.state.trades})
                 interval = self.settings["interval"]
                 marks = {}
                 # 1) Manage exits for every open slot (multi-symbol cadence).
