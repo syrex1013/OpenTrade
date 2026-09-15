@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">FastTradeBot — paper-first scalping console for Binance USDT-M futures</title>
+  <desc id="desc">FastTradeBot wordmark, one-line value proposition, and a signal panel motif showing a BUY entry with fee-edge confirmation.</desc>
+
+  <rect width="1200" height="320" fill="#ffffff"/>
+  <rect width="1200" height="8" fill="#ff0000"/>
+
+  <!-- brand mark: red square with hard offset shadow + crosshair -->
+  <rect x="61" y="73" width="30" height="30" fill="#f8d7da"/>
+  <rect x="55" y="67" width="30" height="30" fill="#ff0000"/>
+  <path d="M70 76 v12 M64 82 h12" stroke="#ffffff" stroke-width="3"/>
+
+  <!-- eyebrow -->
+  <text x="100" y="88" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700" letter-spacing="2" fill="#ff0000">PAPER-FIRST SCALPING CONSOLE</text>
+
+  <!-- name -->
+  <text x="54" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="76" font-weight="800" letter-spacing="-1" fill="#212529">FastTradeBot</text>
+
+  <!-- one-liner -->
+  <text x="56" y="194" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#495057">Fee-aware, multi-slot scalping for Binance USDT-M futures —</text>
+  <text x="56" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#495057">live charts, backtesting, and streaming NVIDIA NIM analysis.</text>
+
+  <!-- stack chips -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#212529">
+    <rect x="56" y="252" width="72" height="26" fill="#ffffff" stroke="#dee2e6"/>
+    <text x="66" y="269">PYTHON</text>
+    <rect x="140" y="252" width="174" height="26" fill="#ffffff" stroke="#dee2e6"/>
+    <text x="150" y="269">REACT 19 + TAILWIND</text>
+    <rect x="326" y="252" width="136" height="26" fill="#ffffff" stroke="#dee2e6"/>
+    <text x="336" y="269">BINANCE USDT-M</text>
+    <rect x="474" y="252" width="48" height="26" fill="#ffffff" stroke="#dee2e6"/>
+    <text x="484" y="269">MIT</text>
+  </g>
+
+  <!-- signal panel -->
+  <rect x="764" y="66" width="380" height="212" fill="#ffffff" stroke="#dee2e6"/>
+  <text x="784" y="92" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="700" fill="#212529">SUIUSDT · 15s</text>
+  <rect x="1064" y="76" width="62" height="22" fill="#ffffff" stroke="#ff0000"/>
+  <text x="1076" y="91" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#ff0000">PAPER</text>
+
+  <text x="784" y="130" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34" font-weight="700" fill="#212529">0.7112</text>
+  <text x="916" y="130" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="700" fill="#198754">▲ +0.4%</text>
+
+  <!-- candle series -->
+  <g>
+    <line x1="800" y1="146" x2="800" y2="176" stroke="#198754" stroke-width="2"/>
+    <rect x="794" y="152" width="12" height="16" fill="#198754"/>
+    <line x1="848" y1="138" x2="848" y2="170" stroke="#198754" stroke-width="2"/>
+    <rect x="842" y="144" width="12" height="16" fill="#198754"/>
+    <line x1="896" y1="142" x2="896" y2="176" stroke="#dc3545" stroke-width="2"/>
+    <rect x="890" y="150" width="12" height="14" fill="#dc3545"/>
+    <line x1="944" y1="146" x2="944" y2="174" stroke="#dc3545" stroke-width="2"/>
+    <rect x="938" y="152" width="12" height="14" fill="#dc3545"/>
+    <line x1="992" y1="132" x2="992" y2="166" stroke="#198754" stroke-width="2"/>
+    <rect x="986" y="138" width="12" height="16" fill="#198754"/>
+    <line x1="1040" y1="124" x2="1040" y2="160" stroke="#198754" stroke-width="2"/>
+    <rect x="1034" y="130" width="12" height="16" fill="#198754"/>
+  </g>
+
+  <!-- entry level -->
+  <line x1="784" y1="163" x2="1064" y2="163" stroke="#ff0000" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="1070" y="167" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#ff0000">ENTRY</text>
+
+  <!-- footer -->
+  <text x="784" y="260" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#495057">BUY · 3.0× ATR TP · fee edge ✓</text>
+</svg>
