@@ -11,7 +11,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).parent
-DB = ROOT / "fasttrade.sqlite3"
+DB = ROOT / "opentrade.sqlite3"
 WEB = ROOT / "web"; DIST = WEB / "dist"
 
 
@@ -2686,5 +2686,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     PORT = int(os.getenv("PORT", "8765"))
-    print(f"FastTradeBot: http://127.0.0.1:{PORT} (paper mode)")
+    print(f"OpenTrade: http://127.0.0.1:{PORT} (paper mode)")
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

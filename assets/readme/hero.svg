@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
-  <title id="title">FastTradeBot — paper-first scalping console for Binance USDT-M futures</title>
-  <desc id="desc">FastTradeBot wordmark, one-line value proposition, and a signal panel motif showing a BUY entry with fee-edge confirmation.</desc>
+  <title id="title">OpenTrade — paper-first scalping console for Binance USDT-M futures</title>
+  <desc id="desc">OpenTrade wordmark, one-line value proposition, and a signal panel motif showing a BUY entry with fee-edge confirmation.</desc>
 
   <rect width="1200" height="320" fill="#ffffff"/>
   <rect width="1200" height="8" fill="#ff0000"/>
@@ -14,7 +14,7 @@
   <text x="100" y="88" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="700" letter-spacing="2" fill="#ff0000">PAPER-FIRST SCALPING CONSOLE</text>
 
   <!-- name -->
-  <text x="54" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="76" font-weight="800" letter-spacing="-1" fill="#212529">FastTradeBot</text>
+  <text x="54" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="76" font-weight="800" letter-spacing="-1" fill="#212529">OpenTrade</text>
 
   <!-- one-liner -->
   <text x="56" y="194" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#495057">Fee-aware, multi-slot scalping for Binance USDT-M futures —</text>

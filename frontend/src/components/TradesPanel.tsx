@@ -84,7 +84,7 @@ export function TradesPanel({ trades, onClear }: Props) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'fasttrade-trades.csv'
+    a.download = 'opentrade-trades.csv'
     a.click()
     URL.revokeObjectURL(url)
   }

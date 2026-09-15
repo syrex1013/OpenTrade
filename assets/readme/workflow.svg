@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
-  <title id="title">FastTradeBot engine loop</title>
+  <title id="title">OpenTrade engine loop</title>
   <desc id="desc">Four-stage pipeline from market data through signals and the fee-edge gate to execution, with an expectancy halt feeding back into the gate.</desc>
 
   <rect width="1200" height="340" fill="#ffffff"/>

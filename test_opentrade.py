@@ -1,7 +1,7 @@
 import unittest
 from app import atr, backtest, book_stats, ema, optimize, rsi, signal, signal_series, sma, Binance, KuCoin, Mexc, Bot, fee_edge_ok, fee_floor_pct, chart_ai_analyze, chart_patterns, confluence_score, vwap_z
 
-class FastTradeTests(unittest.TestCase):
+class OpenTradeTests(unittest.TestCase):
     def test_indicators(self):
         values = list(range(1, 40)); self.assertEqual(len(ema(values, 9)), len(values)); self.assertEqual(len(sma(values, 20)), len(values)); self.assertEqual(len(rsi(values)), len(values))
         candles = [[i, v, v + 1, v - 1, v, 10] for i, v in enumerate(values)]

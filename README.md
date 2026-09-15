@@ -1,18 +1,18 @@
-# FastTradeBot
+# OpenTrade
 
-> **OpenTrade** — a paper-first, fee-aware scalping console for Binance USDT-M futures. Live charts, multi-slot execution, backtesting, and streaming NVIDIA NIM analysis in one self-contained app.
+> A paper-first, fee-aware scalping console for Binance USDT-M futures. Live charts, multi-slot execution, backtesting, and streaming NVIDIA NIM analysis in one self-contained app.
 
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="FastTradeBot — paper-first scalping console for Binance USDT-M futures">
+  <img src="./assets/readme/hero.svg" width="100%" alt="OpenTrade — paper-first scalping console for Binance USDT-M futures">
 </p>
 
 <p align="center">
-  <img src="./assets/readme/screenshot.png" width="100%" alt="FastTradeBot dashboard running in paper mode on SUIUSDT, showing the live chart, signal panels, and an open position">
+  <img src="./assets/readme/screenshot.png" width="100%" alt="OpenTrade dashboard running in paper mode on INJUSDT, showing the live chart with position levels and the trades table">
 </p>
 
 ## What it is
 
-FastTradeBot is a zero-dependency Python console paired with a React dashboard for sub-minute scalping. It runs **paper by default** and only sends real orders when you explicitly arm LIVE mode with Binance USDT-M API keys. Every entry passes through a hard fee gate, so the strategy optimizes for surviving fees before it optimizes for anything else.
+OpenTrade is a zero-dependency Python console paired with a React dashboard for sub-minute scalping. It runs **paper by default** and only sends real orders when you explicitly arm LIVE mode with Binance USDT-M API keys. Every entry passes through a hard fee gate, so the strategy optimizes for surviving fees before it optimizes for anything else.
 
 - **Paper-first** — simulated fills on real market data; no keys needed to chart, signal, or backtest.
 - **Multi-exchange data** — Binance, KuCoin, and MEXC public candles and order books.
@@ -23,7 +23,7 @@ FastTradeBot is a zero-dependency Python console paired with a React dashboard f
 
 ## Why it's different
 
-Most scalpers die on fees. FastTradeBot treats the all-in cost of a round trip as a hard constraint, not an afterthought:
+Most scalpers die on fees. OpenTrade treats the all-in cost of a round trip as a hard constraint, not an afterthought:
 
 - The expected **1-ATR move must clear `fee_edge_mult` × friction** (fees + slippage + spread) before an entry fires.
 - The gate reads ATR directly, so raising `atr_tp_mult` reaches for a bigger target **without** quietly loosening the entry filter.
@@ -33,7 +33,7 @@ Most scalpers die on fees. FastTradeBot treats the all-in cost of a round trip a
 ## How it works
 
 <p align="center">
-  <img src="./assets/readme/workflow.svg" width="100%" alt="FastTradeBot engine loop: market data, signals, fee-edge gate, execution, and expectancy halt feedback">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="OpenTrade engine loop: market data, signals, fee-edge gate, execution, and expectancy halt feedback">
 </p>
 
 1. **Market data** — public candles and order book, aggregated into 15s/30s synthetic bars.

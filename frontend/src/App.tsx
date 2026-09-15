@@ -59,7 +59,7 @@ const CHART_TYPES: { value: ChartType; label: string }[] = [
 
 const INTERVALS = ['1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '1d']
 
-const UI_KEY = 'FASTTRADE_UI_V1'
+const UI_KEY = 'OPENTRADE_UI_V1'
 
 type UiPrefs = {
   chartType?: ChartType
@@ -560,10 +560,10 @@ export default function App() {
       <header className="sticky top-0 z-30 border-b border-line bg-panel">
         <div className="mx-auto flex w-full max-w-[1900px] flex-wrap items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="brand-mark">F</div>
+            <div className="brand-mark">O</div>
             <div>
               <div className="font-display text-lg font-extrabold leading-none tracking-tight">
-                FASTTRADE<span className="ml-1.5 font-medium text-steel">Bot</span>
+                OPEN<span className="ml-1.5 font-medium text-steel">TRADE</span>
               </div>
               <div className="font-mono text-[10px] uppercase tracking-widest text-steel">
                 {pairLabel(settings.symbol)} · {settings.interval}
