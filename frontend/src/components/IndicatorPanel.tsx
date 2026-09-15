@@ -66,12 +66,12 @@ export function IndicatorPanel({ indicators, onChange, showSignals, onShowSignal
       </div>
 
       {indicators.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-line bg-paper/50 px-3 py-4 text-center text-xs text-steel">
+        <p className="rounded-none border border-dashed border-line bg-paper/50 px-3 py-4 text-center text-xs text-steel">
           No indicators. Add EMA, RSI, etc. — duplicates allowed with different periods.
         </p>
       ) : (
         indicators.map((ind) => (
-          <div key={ind.uid} className="rounded-lg border border-line bg-paper/60 p-3">
+          <div key={ind.uid} className="rounded-none border border-line bg-paper/60 p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="size-2.5 shrink-0 rounded-full" style={{ background: ind.color }} />
@@ -85,7 +85,7 @@ export function IndicatorPanel({ indicators, onChange, showSignals, onShowSignal
                 <button
                   type="button"
                   aria-label={`Remove ${ind.label}`}
-                  className="rounded p-1 text-steel hover:bg-coral/10 hover:text-coral"
+                  className="rounded-none p-1 text-steel hover:bg-negative/10 hover:text-negative"
                   onClick={() => remove(ind.uid)}
                 >
                   <Trash2 className="size-3.5" />

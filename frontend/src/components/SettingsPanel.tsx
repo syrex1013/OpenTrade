@@ -99,7 +99,7 @@ export function SettingsPanel({ settings, onChange, onApplyPreset, onSave, savin
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-line bg-paper/60 p-3">
+      <div className="rounded-none border border-line bg-paper/60 p-3">
         <div className="mb-2 text-xs font-bold">Preset</div>
         <div className="flex gap-2">
           <Select value={preset} onValueChange={setPreset}>
@@ -125,7 +125,7 @@ export function SettingsPanel({ settings, onChange, onApplyPreset, onSave, savin
       </div>
 
       {grouped.map(([group, list]) => (
-        <div key={group} className="rounded-lg border border-line bg-paper/40 p-3">
+        <div key={group} className="rounded-none border border-line bg-paper/40 p-3">
           <div className="mb-2 text-xs font-bold">{group}</div>
           <div className="grid gap-3 sm:grid-cols-2">
             {list.map((f) => (
@@ -142,7 +142,7 @@ export function SettingsPanel({ settings, onChange, onApplyPreset, onSave, savin
       ))}
 
       {(error || saveError) && (
-        <p className="rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] text-coral">
+        <p className="rounded-none border border-negative/30 bg-negative/5 px-3 py-2 font-mono text-[11px] text-negative">
           {error || saveError}
         </p>
       )}

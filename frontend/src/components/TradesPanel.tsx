@@ -144,7 +144,7 @@ export function TradesPanel({ trades, onClear }: Props) {
                       onClick={() => setSelected(i)}
                     >
                       <td className="py-2">{t.ts ? new Date(t.ts * 1000).toLocaleTimeString() : '—'}</td>
-                      <td className={`py-2 ${f.side === 'BUY' ? 'text-mint' : 'text-coral'}`}>
+                      <td className={`py-2 ${f.side === 'BUY' ? 'text-positive' : 'text-negative'}`}>
                         {String(f.side ?? '—')}
                       </td>
                       <td className="py-2">{String(f.symbol ?? '—')}</td>
@@ -152,7 +152,7 @@ export function TradesPanel({ trades, onClear }: Props) {
                       <td className="py-2">{fmt(num(f.quantity) ?? num(f.proceeds) ?? 0)}</td>
                       <td className="py-2 text-right text-steel">{fee != null ? cash(fee) : '—'}</td>
                       <td
-                        className={`py-2 text-right font-semibold ${pnl == null ? 'text-steel' : pnl >= 0 ? 'text-mint' : 'text-coral'}`}
+                        className={`py-2 text-right font-semibold ${pnl == null ? 'text-steel' : pnl >= 0 ? 'text-positive' : 'text-negative'}`}
                       >
                         {pnl == null ? (f.side === 'BUY' ? 'open' : '—') : `${pnl >= 0 ? '+' : ''}${cash(pnl)}`}
                         {f.reason ? (
@@ -173,7 +173,7 @@ export function TradesPanel({ trades, onClear }: Props) {
       <Modal open={detail != null} title="Trade details" onClose={() => setSelected(null)}>
         {d && (
           <div className="space-y-3 font-mono text-[11px]">
-            <div className="grid grid-cols-2 gap-2 rounded-lg border border-line bg-paper/70 p-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2 rounded-none border border-line bg-paper/70 p-3 sm:grid-cols-3">
               <Detail label="Side" value={String(d.side ?? '—')} />
               <Detail label="Market" value={String(d.symbol ?? '—')} />
               <Detail label="Mode" value={String(d.mode ?? 'paper')} />
@@ -184,7 +184,7 @@ export function TradesPanel({ trades, onClear }: Props) {
               <Detail label="Leverage" value={`${num(d.leverage) ?? 1}x`} />
               <Detail label="Hold" value={d.hold_bars != null ? `${d.hold_bars} bars` : '—'} />
             </div>
-            <div className="rounded-lg border border-line bg-paper/70 p-3">
+            <div className="rounded-none border border-line bg-paper/70 p-3">
               <div className="mb-2 text-xs font-bold">Fee breakdown</div>
               <div className="space-y-1">
                 <MoneyRow label="Gross" value={num(d.gross_pnl)} />
@@ -243,7 +243,7 @@ function MoneyRow({
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-steel">{label}</span>
-      <span className={bold ? 'font-bold' : value >= 0 ? 'text-mint' : 'text-coral'}>
+      <span className={bold ? 'font-bold' : value >= 0 ? 'text-positive' : 'text-negative'}>
         {value >= 0 ? '+' : ''}
         {cash(value)}
         {suffix ?? ''} {check ? <span className="text-steel">· {check}</span> : null}

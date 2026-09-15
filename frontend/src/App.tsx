@@ -536,8 +536,8 @@ export default function App() {
   const modeBadge = (
     <span
       className={cn(
-        'rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide',
-        running ? 'bg-mint/10 text-mint' : 'bg-line text-steel',
+        'rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide',
+        running ? 'bg-positive/10 text-positive' : 'bg-line text-steel',
       )}
     >
       {running ? 'RUNNING' : 'STOPPED'}
@@ -545,10 +545,10 @@ export default function App() {
     </span>
   )
 
-  const chip = (label: string, value: string, toneVal?: 'mint' | 'coral', tip?: string) => (
+  const chip = (label: string, value: string, toneVal?: 'positive' | 'negative', tip?: string) => (
     <div className="stat-chip" title={tip}>
       <span className="lbl">{label}</span>
-      <span className="val" style={toneVal ? { color: toneVal === 'mint' ? 'var(--color-mint)' : 'var(--color-coral)' } : undefined}>
+      <span className="val" style={toneVal ? { color: toneVal === 'positive' ? 'var(--color-positive)' : 'var(--color-negative)' } : undefined}>
         {value}
       </span>
     </div>
@@ -557,7 +557,7 @@ export default function App() {
   return (
     <div className="min-h-screen">
       {/* ---------------- Header: white desk ---------------- */}
-      <header className="sticky top-0 z-30 border-b border-line bg-panel/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-panel">
         <div className="mx-auto flex w-full max-w-[1900px] flex-wrap items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-3">
             <div className="brand-mark">F</div>
@@ -636,10 +636,10 @@ export default function App() {
           <Separator orientation="vertical" className="mx-1 h-6" />
 
           {/* paper / live */}
-          <div className="flex items-center gap-2 rounded-md border border-line bg-paper px-2 py-1">
+          <div className="flex items-center gap-2 rounded-none border border-line bg-paper px-2 py-1">
             <span className={cn('font-mono text-[10px] uppercase', live ? 'text-steel' : 'font-bold text-ink')}>Paper</span>
             <Switch checked={live} onCheckedChange={(v) => (v ? void armLive() : void goPaper())} aria-label="Live mode" />
-            <span className={cn('font-mono text-[10px] uppercase', live ? 'font-bold text-coral' : 'text-steel')}>Live</span>
+            <span className={cn('font-mono text-[10px] uppercase', live ? 'font-bold text-negative' : 'text-steel')}>Live</span>
           </div>
 
           <Button size="sm" onClick={start} disabled={running || starting}>
@@ -653,7 +653,7 @@ export default function App() {
             <span
               className={cn(
                 'size-1.5 rounded-full',
-                sse === 'live' ? 'live-dot bg-mint' : sse === 'reconnecting' ? 'bg-amber' : 'bg-steel',
+                sse === 'live' ? 'live-dot bg-positive' : sse === 'reconnecting' ? 'bg-warning' : 'bg-steel',
               )}
             />
             <span className="font-mono text-[10px] uppercase text-steel">SSE {sse}</span>
@@ -664,7 +664,7 @@ export default function App() {
 
       {actionError ? (
         <div className="mx-auto w-full max-w-[1900px] px-4 pt-3">
-          <p className="rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] text-coral">
+          <p className="rounded-none border border-negative/30 bg-negative/5 px-3 py-2 font-mono text-[11px] text-negative">
             {actionError}
           </p>
         </div>
@@ -694,7 +694,7 @@ export default function App() {
                 </CardHeader>
                 <CardBody className="h-[520px]">
                   {chartError ? (
-                    <p className="rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] text-coral">
+                    <p className="rounded-none border border-negative/30 bg-negative/5 px-3 py-2 font-mono text-[11px] text-negative">
                       {chartError}
                     </p>
                   ) : (
@@ -751,7 +751,7 @@ export default function App() {
                   <Stat label="Min gain" value={`$${fmt(settings.min_gain_usd ?? 0.1)}`} />
                   <Stat label="Leverage" value={`${settings.leverage ?? 1}x`} />
                   {state?.error ? (
-                    <p className="mt-2 rounded-md border border-coral/30 bg-coral/5 px-2 py-1.5 font-mono text-[11px] text-coral">
+                    <p className="mt-2 rounded-none border border-negative/30 bg-negative/5 px-2 py-1.5 font-mono text-[11px] text-negative">
                       {state.error}
                     </p>
                   ) : null}
@@ -839,7 +839,7 @@ export default function App() {
                     ) : null}
                   </>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
+                  <p className="rounded-none border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
                     No backtest yet — run one to see the equity curve and fill markers.
                   </p>
                 )}
@@ -882,7 +882,7 @@ export default function App() {
                     ) : null}
                   </>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
+                  <p className="rounded-none border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
                     No history run yet — first run downloads every available candle for this pair.
                   </p>
                 )}
@@ -913,8 +913,8 @@ export default function App() {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <span
                         className={cn(
-                          'rounded-md px-2 py-0.5 font-mono text-[11px] font-bold',
-                          optimize.result.qualified ? 'bg-mint/15 text-mint' : 'bg-coral/15 text-coral',
+                          'rounded-full px-2 py-0.5 font-mono text-[11px] font-bold',
+                          optimize.result.qualified ? 'bg-positive/15 text-positive' : 'bg-negative/15 text-negative',
                         )}
                       >
                         {optimize.result.qualified ? 'QUALIFIED' : 'NOT QUALIFIED'}
@@ -926,24 +926,24 @@ export default function App() {
                     {optimize.result.message ? (
                       <p
                         className={cn(
-                          'rounded-md border px-3 py-2 font-mono text-[11px]',
+                          'rounded-none border px-3 py-2 font-mono text-[11px]',
                           optimize.result.qualified
-                            ? 'border-mint/30 bg-mint/5 text-mint'
-                            : 'border-coral/30 bg-coral/5 text-coral',
+                            ? 'border-positive/30 bg-positive/5 text-positive'
+                            : 'border-negative/30 bg-negative/5 text-negative',
                         )}
                       >
                         {optimize.result.message}
                       </p>
                     ) : null}
                     <div className="grid gap-4 lg:grid-cols-2">
-                      <div className="rounded-lg border border-line p-3">
+                      <div className="rounded-none border border-line p-3">
                         <div className="mb-2 font-display text-xs font-bold">Train split</div>
                         <Stat label="Net P/L" value={money(optimize.result.train.net_pnl, true)} tone={toneFor(optimize.result.train.net_pnl)} />
                         <Stat label="Trades" value={String(optimize.result.train.trades)} />
                         <Stat label="Win rate" value={`${(optimize.result.train.win_rate * 100).toFixed(0)}%`} />
                         <Stat label="Profit factor" value={fmt(optimize.result.train.profit_factor)} />
                       </div>
-                      <div className="rounded-lg border border-line p-3">
+                      <div className="rounded-none border border-line p-3">
                         <div className="mb-2 font-display text-xs font-bold">Holdout split</div>
                         <Stat label="Net P/L" value={money(optimize.result.holdout.net_pnl, true)} tone={toneFor(optimize.result.holdout.net_pnl)} />
                         <Stat label="Trades" value={String(optimize.result.holdout.trades)} />
@@ -1027,12 +1027,12 @@ export default function App() {
               </CardHeader>
               <CardBody className="space-y-3">
                 {scanError ? (
-                  <p className="rounded-md border border-coral/30 bg-coral/5 px-2 py-1.5 font-mono text-[11px] text-coral">
+                  <p className="rounded-none border border-negative/30 bg-negative/5 px-2 py-1.5 font-mono text-[11px] text-negative">
                     {scanError}
                   </p>
                 ) : null}
                 {scan.length ? (
-                  <div className="max-h-[420px] overflow-auto rounded-lg border border-line">
+                  <div className="max-h-[420px] overflow-auto rounded-none border border-line">
                     <table className="w-full border-collapse font-mono text-[11px]">
                       <thead>
                         <tr className="border-b border-line bg-paper text-left text-steel">
@@ -1050,8 +1050,8 @@ export default function App() {
                               <button
                                 type="button"
                                 className={cn(
-                                  'font-semibold hover:text-cobalt',
-                                  c.symbol === settings.symbol ? 'text-cobalt' : 'text-ink',
+                                  'font-semibold hover:text-brand',
+                                  c.symbol === settings.symbol ? 'text-brand' : 'text-ink',
                                 )}
                                 onClick={() => setSettings((s) => ({ ...s, symbol: c.symbol }))}
                               >
@@ -1061,8 +1061,8 @@ export default function App() {
                             <td className="px-2 py-1">
                               <span
                                 className={cn(
-                                  'rounded px-1.5 py-0.5 text-[10px] font-bold',
-                                  c.signal === 'BUY' ? 'bg-mint/15 text-mint' : c.signal === 'SELL' ? 'bg-coral/15 text-coral' : 'bg-line text-steel',
+                                  'rounded-full px-1.5 py-0.5 text-[10px] font-bold',
+                                  c.signal === 'BUY' ? 'bg-positive/15 text-positive' : c.signal === 'SELL' ? 'bg-negative/15 text-negative' : 'bg-line text-steel',
                                 )}
                               >
                                 {c.signal}
@@ -1077,7 +1077,7 @@ export default function App() {
                     </table>
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
+                  <p className="rounded-none border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
                     No scan yet — ranks {settings.scan_symbols ?? 12} hot markets by signal score.
                   </p>
                 )}
@@ -1098,7 +1098,7 @@ export default function App() {
             You are about to switch from paper to <b>live</b> on {mode?.exchange ?? settings.exchange}. Orders will use
             your real exchange keys and real funds.
           </p>
-          <p className="rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] text-coral">
+          <p className="rounded-none border border-negative/30 bg-negative/5 px-3 py-2 font-mono text-[11px] text-negative">
             {mode?.keys?.present
               ? `Keys detected: ${mode.keys.env.join(' + ')} (${mode.keys.key_hint})`
               : 'No API keys detected — arming will fail until keys are present.'}
@@ -1188,15 +1188,15 @@ function followHint(candles: Candle[], livePrice?: number): string {
   return `${candles.length} candles · last ${stamp}${tail}`
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'mint' | 'coral' | 'steel' }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone?: 'positive' | 'negative' | 'steel' }) {
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-line/60 py-1.5 last:border-0">
       <span className="text-[11px] text-steel">{label}</span>
       <span
         className={cn(
           'font-mono text-[12px] font-semibold',
-          tone === 'mint' && 'text-mint',
-          tone === 'coral' && 'text-coral',
+          tone === 'positive' && 'text-positive',
+          tone === 'negative' && 'text-negative',
         )}
       >
         {value}
@@ -1211,9 +1211,9 @@ function money(n: number | null | undefined, tone = false): string {
   return cash(n)
 }
 
-function toneFor(n: number | null | undefined): 'mint' | 'coral' | undefined {
+function toneFor(n: number | null | undefined): 'positive' | 'negative' | undefined {
   if (n == null || !Number.isFinite(n)) return undefined
-  return n >= 0 ? 'mint' : 'coral'
+  return n >= 0 ? 'positive' : 'negative'
 }
 
 /** Compact fills table for finished backtest/optimize runs. */
@@ -1221,7 +1221,7 @@ function FillsTable({ fills }: { fills: BacktestFill[] }) {
   const shown = fills.slice(0, 80)
   return (
     <div className="space-y-2">
-      <div className="max-h-[360px] overflow-auto rounded-lg border border-line">
+      <div className="max-h-[360px] overflow-auto rounded-none border border-line">
         <table className="w-full border-collapse font-mono text-[11px]">
           <thead>
             <tr className="border-b border-line bg-paper text-left text-steel">
@@ -1243,7 +1243,7 @@ function FillsTable({ fills }: { fills: BacktestFill[] }) {
                 <td
                   className={cn(
                     'px-2 py-1 font-semibold',
-                    f.side === 'BUY' ? 'text-cobalt' : 'text-coral',
+                    f.side === 'BUY' ? 'text-positive' : 'text-negative',
                   )}
                 >
                   {f.side}
@@ -1254,7 +1254,7 @@ function FillsTable({ fills }: { fills: BacktestFill[] }) {
                 <td
                   className={cn(
                     'px-2 py-1 text-right',
-                    f.pnl == null ? 'text-steel' : f.pnl >= 0 ? 'text-mint' : 'text-coral',
+                    f.pnl == null ? 'text-steel' : f.pnl >= 0 ? 'text-positive' : 'text-negative',
                   )}
                 >
                   {f.pnl == null ? '—' : money(f.pnl, true)}

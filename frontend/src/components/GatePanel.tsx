@@ -31,14 +31,14 @@ export function GatePanel({ gates, onChange }: Props) {
       <div className="flex gap-2">
         <button
           type="button"
-          className="rounded-md border border-line px-2 py-1 font-mono text-[10px] hover:bg-paper"
+          className="rounded-none border border-line px-2 py-1 font-mono text-[10px] hover:bg-paper"
           onClick={() => setAll(true)}
         >
           Enable all
         </button>
         <button
           type="button"
-          className="rounded-md border border-line px-2 py-1 font-mono text-[10px] hover:bg-paper"
+          className="rounded-none border border-line px-2 py-1 font-mono text-[10px] hover:bg-paper"
           onClick={() => setAll(false)}
         >
           Disable all
@@ -48,7 +48,7 @@ export function GatePanel({ gates, onChange }: Props) {
         {(Object.keys(GATE_META) as GateId[]).map((id) => (
           <div
             key={id}
-            className="flex items-start justify-between gap-3 rounded-lg border border-line bg-paper/60 px-2.5 py-2"
+            className="flex items-start justify-between gap-3 rounded-none border border-line bg-paper/60 px-2.5 py-2"
           >
             <div className="min-w-0">
               <Label htmlFor={`gate-${id}`} className="text-[11px] font-semibold">

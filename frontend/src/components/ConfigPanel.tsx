@@ -110,16 +110,16 @@ export function ConfigPanel({ settings, gates, indicators, onApply }: Props) {
         </div>
       </div>
       {error ? (
-        <p className="rounded-md border border-coral/30 bg-coral/5 px-2 py-1.5 font-mono text-[11px] text-coral">
+        <p className="rounded-none border border-negative/30 bg-negative/5 px-2 py-1.5 font-mono text-[11px] text-negative">
           {error}
         </p>
       ) : null}
-      {ok ? <p className="font-mono text-[11px] text-mint">{ok}</p> : null}
+      {ok ? <p className="font-mono text-[11px] text-positive">{ok}</p> : null}
       <div className="max-h-[280px] space-y-1.5 overflow-y-auto">
         {list.map((c) => (
           <div
             key={c.name}
-            className="flex items-center gap-2 rounded-lg border border-line bg-paper/60 px-2.5 py-2"
+            className="flex items-center gap-2 rounded-none border border-line bg-paper/60 px-2.5 py-2"
           >
             <div className="min-w-0 flex-1">
               <div className="truncate text-[11px] font-semibold">{c.label || c.name}</div>
@@ -138,7 +138,7 @@ export function ConfigPanel({ settings, gates, indicators, onApply }: Props) {
             {!c.builtin ? (
               <Button
                 variant="ghost"
-                className="h-7 px-2 text-[10px] text-coral"
+                className="h-7 px-2 text-[10px] text-negative"
                 disabled={Boolean(busy)}
                 onClick={() => remove(c.name)}
               >

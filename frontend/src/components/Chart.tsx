@@ -99,14 +99,14 @@ function signalMarkers(candles: Candle[], indicators: IndicatorConfig[]): Series
       markers.push({
         time: Math.floor(candles[i][0] / 1000) as UTCTimestamp,
         position: 'belowBar',
-        color: '#059669',
+        color: '#198754',
         shape: 'arrowUp',
       })
     } else if (sell) {
       markers.push({
         time: Math.floor(candles[i][0] / 1000) as UTCTimestamp,
         position: 'aboveBar',
-        color: '#e11d48',
+        color: '#dc3545',
         shape: 'arrowDown',
       })
     }
@@ -145,19 +145,19 @@ export function Chart({
       autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: '#ffffff' },
-        textColor: '#5b6b7c',
+        textColor: '#495057',
         fontFamily: "'IBM Plex Mono', monospace",
         fontSize: 11,
-        panes: { separatorColor: '#e2e8f0', separatorHoverColor: '#2563eb' },
+        panes: { separatorColor: '#dee2e6', separatorHoverColor: '#ff0000' },
       },
       grid: {
-        vertLines: { color: '#f1f5f9' },
-        horzLines: { color: '#f1f5f9' },
+        vertLines: { color: '#f8f9fa' },
+        horzLines: { color: '#f8f9fa' },
       },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: '#e2e8f0' },
+      rightPriceScale: { borderColor: '#dee2e6' },
       timeScale: {
-        borderColor: '#e2e8f0',
+        borderColor: '#dee2e6',
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 4,
@@ -167,24 +167,24 @@ export function Chart({
 
     const main: MainSeries =
       seriesKind === 'Line'
-        ? chart.addSeries(LineSeries, { color: '#2563eb', lineWidth: 2, priceLineVisible: false })
+        ? chart.addSeries(LineSeries, { color: '#ff0000', lineWidth: 2, priceLineVisible: false })
         : seriesKind === 'Area'
           ? chart.addSeries(AreaSeries, {
-              lineColor: '#2563eb',
-              topColor: 'rgba(37,99,235,0.28)',
-              bottomColor: 'rgba(37,99,235,0.02)',
+              lineColor: '#ff0000',
+              topColor: 'rgba(255,0,0,0.25)',
+              bottomColor: 'rgba(255,0,0,0.02)',
               lineWidth: 2,
               priceLineVisible: false,
             })
           : seriesKind === 'Bar'
-            ? chart.addSeries(BarSeries, { upColor: '#059669', downColor: '#e11d48', thinBars: false })
+            ? chart.addSeries(BarSeries, { upColor: '#198754', downColor: '#dc3545', thinBars: false })
             : chart.addSeries(CandlestickSeries, {
-                upColor: '#059669',
-                downColor: '#e11d48',
-                borderUpColor: '#059669',
-                borderDownColor: '#e11d48',
-                wickUpColor: '#059669',
-                wickDownColor: '#e11d48',
+                upColor: '#198754',
+                downColor: '#dc3545',
+                borderUpColor: '#198754',
+                borderDownColor: '#dc3545',
+                wickUpColor: '#198754',
+                wickDownColor: '#dc3545',
               })
 
     if (needRsi) chart.addPane(true).setStretchFactor(0.35)
@@ -282,7 +282,7 @@ export function Chart({
           rsiGuideLines.current.set(k, [
             series.createPriceLine({
               price: rsiBuy,
-              color: '#059669',
+              color: '#198754',
               lineWidth: 1,
               lineStyle: LineStyle.Dashed,
               axisLabelVisible: true,
@@ -290,7 +290,7 @@ export function Chart({
             }),
             series.createPriceLine({
               price: rsiSell,
-              color: '#e11d48',
+              color: '#dc3545',
               lineWidth: 1,
               lineStyle: LineStyle.Dashed,
               axisLabelVisible: true,
@@ -298,7 +298,7 @@ export function Chart({
             }),
             series.createPriceLine({
               price: 50,
-              color: '#e2e8f0',
+              color: '#dee2e6',
               lineWidth: 1,
               lineStyle: LineStyle.SparseDotted,
               axisLabelVisible: false,
@@ -347,9 +347,9 @@ export function Chart({
         }),
       )
     }
-    addLevel(levels?.entry, '#2563eb', 'ENTRY', LineStyle.Solid)
-    addLevel(levels?.takeProfit, '#059669', 'TP')
-    addLevel(levels?.stopLoss, '#e11d48', 'SL')
+    addLevel(levels?.entry, '#0d6efd', 'ENTRY', LineStyle.Solid)
+    addLevel(levels?.takeProfit, '#198754', 'TP')
+    addLevel(levels?.stopLoss, '#dc3545', 'SL')
 
     if (followLive.current) chart.timeScale().scrollToRealTime()
   }, [
@@ -372,12 +372,12 @@ export function Chart({
   return (
     <div className="relative min-h-[420px] w-full flex-1">
       <div ref={hostRef} className="absolute inset-0" />
-      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex flex-wrap items-center gap-3 rounded-md border border-line bg-white/95 px-2.5 py-1.5 font-mono text-[10px] text-steel shadow-sm backdrop-blur">
-        <span className="inline-flex items-center gap-1 text-mint">▲ BUY</span>
-        <span className="inline-flex items-center gap-1 text-coral">▼ SELL</span>
-        <span className="inline-flex items-center gap-1 text-cobalt">— ENTRY</span>
-        <span className="inline-flex items-center gap-1 text-mint">- - TP</span>
-        <span className="inline-flex items-center gap-1 text-coral">- - SL</span>
+      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex flex-wrap items-center gap-3 rounded-none border border-line bg-panel px-2.5 py-1.5 font-mono text-[10px] text-steel">
+        <span className="inline-flex items-center gap-1 text-positive">▲ BUY</span>
+        <span className="inline-flex items-center gap-1 text-negative">▼ SELL</span>
+        <span className="inline-flex items-center gap-1 text-info">— ENTRY</span>
+        <span className="inline-flex items-center gap-1 text-positive">- - TP</span>
+        <span className="inline-flex items-center gap-1 text-negative">- - SL</span>
       </div>
       {!candles.length && (
         <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-steel">

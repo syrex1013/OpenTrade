@@ -10,7 +10,7 @@ export function SelectTrigger({ className, children, ...props }: ComponentProps<
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        'inline-flex h-9 items-center justify-between gap-2 rounded-md border border-line bg-panel px-3 text-sm font-semibold text-ink outline-none focus:border-cobalt disabled:opacity-50',
+        'inline-flex h-9 items-center justify-between gap-2 rounded-lg border border-line bg-panel px-3 text-sm font-semibold text-ink outline-none focus:border-brand disabled:opacity-50',
         className,
       )}
       {...props}
@@ -28,7 +28,7 @@ export function SelectContent({ className, children, ...props }: ComponentProps<
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          'z-50 overflow-hidden rounded-md border border-line bg-panel shadow-lg',
+          'z-50 overflow-hidden rounded-lg border border-line bg-panel shadow-lg',
           className,
         )}
         position="popper"
@@ -45,14 +45,14 @@ export function SelectItem({ className, children, ...props }: ComponentProps<typ
   return (
     <SelectPrimitive.Item
       className={cn(
-        'relative flex cursor-pointer items-center rounded px-7 py-1.5 text-sm outline-none data-[highlighted]:bg-paper',
+        'relative flex cursor-pointer items-center rounded-none px-7 py-1.5 text-sm outline-none data-[highlighted]:bg-paper',
         className,
       )}
       {...props}
     >
       <span className="absolute left-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <Check className="size-3.5 text-cobalt" />
+          <Check className="size-3.5 text-brand" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

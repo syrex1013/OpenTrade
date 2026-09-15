@@ -20,24 +20,24 @@ export function AnalysisPanel({ analysis, streamText, error, loading, onRun }: P
         {loading ? 'Analyzing…' : 'Run AI analysis'}
       </Button>
       {error ? (
-        <p className="rounded-md border border-coral/30 bg-coral/5 px-2 py-1.5 font-mono text-[11px] text-coral">
+        <p className="rounded-none border border-negative/30 bg-negative/5 px-2 py-1.5 font-mono text-[11px] text-negative">
           {error}
         </p>
       ) : null}
       {loading && streamText ? (
-        <p className="max-h-40 overflow-auto rounded-md border border-line bg-paper/70 p-2 font-mono text-[11px] text-steel whitespace-pre-wrap">
+        <p className="max-h-40 overflow-auto rounded-none border border-line bg-paper/70 p-2 font-mono text-[11px] text-steel whitespace-pre-wrap">
           {streamText}
         </p>
       ) : null}
       {analysis ? (
-        <div className="space-y-2 rounded-lg border border-line bg-paper/70 p-3">
+        <div className="space-y-2 rounded-none border border-line bg-paper/70 p-3">
           <div className="flex items-center justify-between gap-2">
             <span
-              className={`rounded-md px-2 py-0.5 font-mono text-xs font-bold ${
+              className={`rounded-full px-2 py-0.5 font-mono text-xs font-bold ${
                 analysis.action === 'BUY'
-                  ? 'bg-mint/15 text-mint'
+                  ? 'bg-positive/15 text-positive'
                   : analysis.action === 'SELL'
-                    ? 'bg-coral/15 text-coral'
+                    ? 'bg-negative/15 text-negative'
                     : 'bg-line text-steel'
               }`}
             >

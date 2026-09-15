@@ -6,8 +6,8 @@ type Props = {
 }
 
 function toneFor(action?: string) {
-  if (action === 'BUY') return 'bg-mint/15 text-mint border-mint/30'
-  if (action === 'SELL') return 'bg-coral/15 text-coral border-coral/30'
+  if (action === 'BUY') return 'bg-positive/15 text-positive border-positive/30'
+  if (action === 'SELL') return 'bg-negative/15 text-negative border-negative/30'
   return 'bg-line/80 text-steel border-line'
 }
 
@@ -17,7 +17,7 @@ function CheckRow({ check }: { check: DecisionCheck }) {
     <div className={`flex items-start gap-2 border-b border-line/60 py-1.5 last:border-0 ${disabled ? 'opacity-45' : ''}`}>
       <span
         className={`mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-sm font-mono text-[10px] font-bold ${
-          disabled ? 'bg-line text-steel' : check.ok ? 'bg-mint/15 text-mint' : 'bg-coral/15 text-coral'
+          disabled ? 'bg-line text-steel' : check.ok ? 'bg-positive/15 text-positive' : 'bg-negative/15 text-negative'
         }`}
         title={disabled ? 'disabled' : check.ok ? 'pass' : 'fail'}
       >
@@ -39,7 +39,7 @@ function CheckRow({ check }: { check: DecisionCheck }) {
 export function DecisionPanel({ decision }: Props) {
   if (!decision) {
     return (
-      <div className="rounded-lg border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
+      <div className="rounded-none border border-dashed border-line bg-paper/50 px-3 py-6 text-center text-xs text-steel">
         Waiting for live decision stream…
       </div>
     )
@@ -56,7 +56,7 @@ export function DecisionPanel({ decision }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`rounded-md border px-2 py-0.5 font-mono text-xs font-bold ${toneFor(decision.action)}`}>
+        <span className={`rounded-full border px-2 py-0.5 font-mono text-xs font-bold ${toneFor(decision.action)}`}>
           {decision.action}
         </span>
         <span className="font-mono text-[11px] text-steel">{decision.reason.replaceAll('_', ' ')}</span>
@@ -65,7 +65,7 @@ export function DecisionPanel({ decision }: Props) {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 rounded-lg border border-line bg-paper/70 p-2 font-mono text-[10px]">
+      <div className="grid grid-cols-3 gap-2 rounded-none border border-line bg-paper/70 p-2 font-mono text-[10px]">
         <div>
           <div className="text-steel">Price</div>
           <div className="font-semibold">{decision.price != null ? cash(decision.price) : '—'}</div>
@@ -76,7 +76,7 @@ export function DecisionPanel({ decision }: Props) {
         </div>
         <div>
           <div className="text-steel">Est. PnL</div>
-          <div className={`font-semibold ${(decision.est_pnl ?? 0) >= 0 ? 'text-mint' : 'text-coral'}`}>
+          <div className={`font-semibold ${(decision.est_pnl ?? 0) >= 0 ? 'text-positive' : 'text-negative'}`}>
             {decision.est_pnl != null ? cash(decision.est_pnl) : '—'}
           </div>
         </div>
@@ -94,7 +94,7 @@ export function DecisionPanel({ decision }: Props) {
           return (
             <div key={g.title}>
               <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-steel">{g.title}</div>
-              <div className="rounded-lg border border-line bg-panel/40 px-2">
+              <div className="rounded-none border border-line bg-panel/40 px-2">
                 {rows.map((c) => (
                   <CheckRow key={c.id} check={c} />
                 ))}

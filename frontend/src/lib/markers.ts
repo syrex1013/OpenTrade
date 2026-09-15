@@ -38,7 +38,7 @@ export function tradeMarkers(
     out.push({
       time: snapTime(candles, secs),
       position: side === 'BUY' ? 'belowBar' : 'aboveBar',
-      color: side === 'BUY' ? '#0d9b6c' : '#e03e52',
+      color: side === 'BUY' ? '#198754' : '#dc3545',
       shape: side === 'BUY' ? 'arrowUp' : 'arrowDown',
       text: side,
     })
@@ -68,7 +68,7 @@ export function fillMarkers(result: BacktestResult | null): SeriesMarker<Time>[]
     out.push({
       time: snapped as UTCTimestamp,
       position: side === 'BUY' ? 'belowBar' : 'aboveBar',
-      color: side === 'BUY' ? '#0d9b6c' : '#e03e52',
+      color: side === 'BUY' ? '#198754' : '#dc3545',
       shape: side === 'BUY' ? 'arrowUp' : 'arrowDown',
       text: f.reason && side === 'SELL' ? `SELL ${f.reason}` : side,
     })

@@ -39,24 +39,24 @@ export function BacktestStats({ result }: Props) {
       autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: '#ffffff' },
-        textColor: '#5b6b7c',
+        textColor: '#495057',
         fontFamily: "'IBM Plex Mono', monospace",
         fontSize: 11,
-        panes: { separatorColor: '#d5dbe3', separatorHoverColor: '#2557ff' },
+        panes: { separatorColor: '#dee2e6', separatorHoverColor: '#ff0000' },
       },
-      grid: { vertLines: { color: '#eef1f5' }, horzLines: { color: '#eef1f5' } },
+      grid: { vertLines: { color: '#f8f9fa' }, horzLines: { color: '#f8f9fa' } },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: '#d5dbe3' },
-      timeScale: { borderColor: '#d5dbe3', timeVisible: true, secondsVisible: false },
+      rightPriceScale: { borderColor: '#dee2e6' },
+      timeScale: { borderColor: '#dee2e6', timeVisible: true, secondsVisible: false },
     })
-    const equity = chart.addSeries(LineSeries, { color: '#2557ff', lineWidth: 2, priceLineVisible: false })
+    const equity = chart.addSeries(LineSeries, { color: '#0d6efd', lineWidth: 2, priceLineVisible: false })
     chart.addPane(true).setStretchFactor(0.3)
     const ddSeries = chart.addSeries(
       AreaSeries,
       {
-        lineColor: '#e03e52',
-        topColor: 'rgba(224,62,82,0.06)',
-        bottomColor: 'rgba(224,62,82,0.30)',
+        lineColor: '#dc3545',
+        topColor: 'rgba(220,53,69,0.06)',
+        bottomColor: 'rgba(220,53,69,0.30)',
         lineWidth: 1,
         priceLineVisible: false,
       },
@@ -110,15 +110,15 @@ export function BacktestStats({ result }: Props) {
         </span>
       </CardHeader>
       <CardBody className="space-y-3 pt-2">
-        <div className="grid grid-cols-2 gap-2 rounded-lg border border-line bg-paper/70 p-3 font-mono text-[11px] sm:grid-cols-3 lg:grid-cols-4">
-          <Stat label="Return" value={`${result.return_pct.toFixed(2)}%`} tone={result.return_pct >= 0 ? 'mint' : 'coral'} />
-          <Stat label="Net PnL" value={cash(result.net_pnl ?? result.ending_equity - result.capital)} tone={(result.net_pnl ?? 0) >= 0 ? 'mint' : 'coral'} />
-          <Stat label="Fees paid" value={cash(result.fees_total ?? 0)} tone="coral" />
+        <div className="grid grid-cols-2 gap-2 rounded-none border border-line bg-paper/70 p-3 font-mono text-[11px] sm:grid-cols-3 lg:grid-cols-4">
+          <Stat label="Return" value={`${result.return_pct.toFixed(2)}%`} tone={result.return_pct >= 0 ? 'positive' : 'negative'} />
+          <Stat label="Net PnL" value={cash(result.net_pnl ?? result.ending_equity - result.capital)} tone={(result.net_pnl ?? 0) >= 0 ? 'positive' : 'negative'} />
+          <Stat label="Fees paid" value={cash(result.fees_total ?? 0)} tone="negative" />
           <Stat label="Trades" value={String(result.trades)} />
           <Stat label="Win rate" value={`${result.win_rate.toFixed(0)}%`} />
           <Stat label="Profit factor" value={result.profit_factor.toFixed(2)} />
-          <Stat label="Max DD" value={`${result.max_drawdown_pct.toFixed(2)}%`} tone="coral" />
-          <Stat label="Expectancy" value={cash(expectancy)} tone={expectancy >= 0 ? 'mint' : 'coral'} />
+          <Stat label="Max DD" value={`${result.max_drawdown_pct.toFixed(2)}%`} tone="negative" />
+          <Stat label="Expectancy" value={cash(expectancy)} tone={expectancy >= 0 ? 'positive' : 'negative'} />
           <Stat label="Avg trade" value={cash(result.avg_trade ?? 0)} />
           <Stat label="Ending equity" value={cash(result.ending_equity)} />
           <Stat label="Leverage" value={`${result.leverage ?? 1}x`} />
@@ -126,8 +126,8 @@ export function BacktestStats({ result }: Props) {
         </div>
         <div>
           <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-steel">
-            <span className="text-cobalt">Equity</span>
-            <span className="text-coral">Drawdown %</span>
+            <span className="text-info">Equity</span>
+            <span className="text-negative">Drawdown %</span>
           </div>
           <div ref={ref} className="h-[220px] w-full" />
         </div>
@@ -136,11 +136,11 @@ export function BacktestStats({ result }: Props) {
   )
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'mint' | 'coral' }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone?: 'positive' | 'negative' }) {
   return (
     <div>
       <div className="text-steel">{label}</div>
-      <div className={tone === 'mint' ? 'font-semibold text-mint' : tone === 'coral' ? 'font-semibold text-coral' : 'font-semibold'}>
+      <div className={tone === 'positive' ? 'font-semibold text-positive' : tone === 'negative' ? 'font-semibold text-negative' : 'font-semibold'}>
         {value}
       </div>
     </div>

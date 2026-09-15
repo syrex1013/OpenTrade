@@ -22,14 +22,14 @@ export function Modal({ open, title, onClose, children, width = 'max-w-2xl' }: P
   if (!open) return null
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4"
       role="dialog"
       aria-modal="true"
       aria-label={title}
       onClick={onClose}
     >
       <div
-        className={`my-8 w-full ${width} rounded-xl border border-line bg-panel shadow-lg`}
+        className={`my-8 w-full ${width} rounded-none border border-line bg-panel shadow-[0_1rem_3rem_rgba(0,0,0,0.175)]`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">

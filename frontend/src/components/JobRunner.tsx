@@ -62,7 +62,7 @@ export function JobRunner({
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-line">
             <div
-              className="h-full rounded-full bg-cobalt transition-all duration-300"
+              className="h-full rounded-full bg-brand transition-all duration-300"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -72,7 +72,7 @@ export function JobRunner({
         <p className="font-mono text-[11px] text-steel">{summary}</p>
       ) : null}
       {error || job?.status === 'error' ? (
-        <p className="rounded-md border border-coral/30 bg-coral/5 px-3 py-2 font-mono text-[11px] text-coral">
+        <p className="rounded-none border border-negative/30 bg-negative/5 px-3 py-2 font-mono text-[11px] text-negative">
           {error || job?.error || 'Job failed'}
         </p>
       ) : null}
